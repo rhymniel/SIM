@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input[type=text], input[type=password], input[type=email] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px;
+            background-color: #04AA6D;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #039a60;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: -8px;
+            margin-bottom: 8px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+        .close {
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Authentication System</h1>
+
+    <!-- Buttons to open modals -->
+    <section>
+        <button onclick="showModal('loginModal')">Login</button>
+        <button onclick="showModal('signupModal')">Sign Up</button>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('loginModal')">&times;</span>
+            <h2>Login Form</h2>
+            <form action="login.php" method="post">
+                <label for="account_id"><b>Account ID</b></label>
+                <input type="text" id="account_id" name="account_id" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input type="password" id="psw" name="psw" required>
+
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('signupModal')">&times;</span>
+            <h2>Signup Form</h2>
+            <form id="signupForm" action="signup.php" method="post">
+                <label for="name"><b>Full Name</b></label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="uname"><b>Username</b></label>
+                <input type="text" id="uname" name="uname" required>
+
+                <label for="email"><b>Email</b></label>
+                <input type="email" id="email" name="email" required>
+                <span id="emailError" class="error" style="display: none;">Invalid email domain for the selected role.</span>
+
+                <label for="psw"><b>Password</b></label>
+                <input type="password" id="psw" name="psw" required>
+
+                <label for="role"><b>Role</b></label>
+                <select name="role" id="role" onchange="validateEmail()" required>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <span id="roleError" class="error" style="display: none;">Role-specific email required.</span>
+
+                <div id="keywordField" style="display: none;">
+                    <label for="keyword"><b>Role Keyword</b></label>
+                    <input type="text" id="keyword" name="keyword" placeholder="Enter role-specific keyword">
+                </div>
+
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Show the modal
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        // Hide the modal
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Validate email domain based on the selected role
+        function validateEmail() {
+            const emailInput = document.getElementById('email');
+            const role = document.getElementById('role').value;
+            const emailError = document.getElementById('emailError');
+            const keywordField = document.getElementById('keywordField');
+
+            // Show the keyword field for admin or teacher
+            if (role === 'admin' || role === 'teacher') {
+                keywordField.style.display = 'block';
+            } else {
+                keywordField.style.display = 'none';
+            }
+
+            // Email domain validation
+            emailInput.addEventListener('input', () => {
+                let email = emailInput.value;
+                let valid = true;
+
+                if (role === 'admin' && !email.endsWith('@principal.bcp.ph')) {
+                    valid = false;
+                } else if (role === 'teacher' && !email.endsWith('@educator.bcp.ph')) {
+                    valid = false;
+                } else if (role === 'student') {
+                    valid = true; // No domain restrictions for students
+                }
+
+                if (!valid) {
+                    emailError.style.display = 'block';
+                } else {
+                    emailError.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
